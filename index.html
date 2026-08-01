@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>What Are They Going to Have?</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #5b5bd6;
+            --primary-dark: #4242b5;
+            --background: #eef0ff;
+            --panel: #ffffff;
+            --text: #202033;
+            --muted: #73738a;
+            --success: #138a55;
+            --success-background: #dff8eb;
+            --error: #c63c3c;
+            --error-background: #ffe4e4;
+            --key-background: #f2f3f8;
+            --key-border: #d4d6e2;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            overflow: hidden;
+            background: var(--background);
+            color: var(--text);
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: 1fr 5px 1fr;
+            width: 100vw;
+            min-height: 100vh;
+        }
+
+        .divider {
+            background: #27273a;
+        }
+
+        .game-screen {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            padding: 24px;
+            background: var(--panel);
+            transition:
+                background-color 0.25s ease,
+                transform 0.25s ease;
+        }
+
+        .game-screen.success-flash {
+            background: var(--success-background);
+        }
+
+        .screen-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .team-name {
+            margin: 0;
+            color: var(--primary);
+            font-size: clamp(18px, 2vw, 27px);
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
+
+        .progress {
+            min-width: 84px;
+            padding: 10px 16px;
+            border-radius: 999px;
+            background: var(--primary);
+            color: white;
+            font-size: clamp(17px, 2vw, 24px);
+            font-weight: 900;
+            text-align: center;
+        }
+
+        .question-area {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            justify-content: center;
+            width: 100%;
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        .question {
+            min-height: 92px;
+            margin: 0 0 24px;
+            font-size: clamp(26px, 3.2vw, 47px);
+            line-height: 1.2;
+            text-align: center;
+        }
+
+        .answer-input {
+            width: 100%;
+            min-height: 76px;
+            padding: 14px 20px;
+            border: 4px solid var(--primary);
+            border-radius: 18px;
+            outline: none;
+            background: white;
+            color: var(--text);
+            font-size: clamp(24px, 3vw, 40px);
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .answer-input.shake {
+            animation: shake 0.32s ease-in-out;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-9px);
+            }
+
+            75% {
+                transform: translateX(9px);
+            }
+        }
+
+        .feedback {
+            min-height: 64px;
+            margin: 14px 0;
+            padding: 10px;
+            border-radius: 12px;
+            font-size: clamp(17px, 1.8vw, 24px);
+            font-weight: 800;
+            line-height: 1.35;
+            text-align: center;
+        }
+
+        .feedback.correct {
+            background: var(--success-background);
+            color: var(--success);
+        }
+
+        .feedback.wrong {
+            background: var(--error-background);
+            color: var(--error);
+        }
+
+        .keyboard {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            width: 100%;
+            max-width: 720px;
+            margin: 0 auto;
+            user-select: none;
+        }
+
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .key {
+            flex: 1;
+            min-width: 0;
+            min-height: 51px;
+            border: 2px solid var(--key-border);
+            border-radius: 10px;
+            background: var(--key-background);
+            color: var(--text);
+            font-size: clamp(15px, 1.8vw, 23px);
+            font-weight: 900;
+            cursor: pointer;
+            transition:
+                transform 0.08s ease,
+                background-color 0.15s ease;
+        }
+
+        .key:hover {
+            background: #e5e7f5;
+        }
+
+        .key:active {
+            transform: scale(0.93);
+        }
+
+        .key:disabled {
+            cursor: not-allowed;
+            opacity: 0.45;
+        }
+
+        .action-row {
+            margin-top: 3px;
+        }
+
+        .key.action {
+            min-height: 56px;
+            padding: 8px;
+            font-size: clamp(12px, 1.5vw, 18px);
+        }
+
+        .key.space {
+            flex: 2;
+        }
+
+        .key.clear {
+            background: #fff1d7;
+            border-color: #e8bd68;
+        }
+
+        .key.check {
+            flex: 1.6;
+            border-color: var(--primary-dark);
+            background: var(--primary);
+            color: white;
+        }
+
+        .key.check:hover {
+            background: var(--primary-dark);
+        }
+
+        .finished-message {
+            color: var(--success);
+        }
+
+        @media (max-width: 900px) {
+            .game-screen {
+                padding: 14px 10px;
+            }
+
+            .screen-header {
+                margin-bottom: 16px;
+            }
+
+            .question {
+                min-height: 70px;
+                margin-bottom: 15px;
+            }
+
+            .answer-input {
+                min-height: 62px;
+                border-width: 3px;
+            }
+
+            .key {
+                min-height: 45px;
+                border-radius: 7px;
+            }
+
+            .feedback {
+                min-height: 52px;
+                margin: 8px 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="game-board">
+        <!-- LEFT SCREEN -->
+        <section class="game-screen" id="left-screen">
+            <header class="screen-header">
+                <h2 class="team-name">TEAM 1</h2>
+                <div class="progress">1/8</div>
+            </header>
+
+            <div class="question-area">
+                <h1 class="question"></h1>
+
+                <input class="answer-input" type="text" aria-label="Team 1 answer" readonly />
+
+                <div class="feedback" aria-live="polite"></div>
+
+                <div class="keyboard"></div>
+            </div>
+        </section>
+
+        <div class="divider"></div>
+
+        <!-- RIGHT SCREEN -->
+        <section class="game-screen" id="right-screen">
+            <header class="screen-header">
+                <h2 class="team-name">TEAM 2</h2>
+                <div class="progress">1/8</div>
+            </header>
+
+            <div class="question-area">
+                <h1 class="question"></h1>
+
+                <input class="answer-input" type="text" aria-label="Team 2 answer" readonly />
+
+                <div class="feedback" aria-live="polite"></div>
+
+                <div class="keyboard"></div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        /*
+          Urutan nama dan jawaban.
+    
+          accepted berisi variasi jawaban yang tetap dianggap benar.
+          Contoh: "taco" dan "tacos" sama-sama diterima.
+        */
+        const players = [
+            {
+                name: "Alzam",
+                answer: "spaghetti",
+                accepted: ["spaghetti"]
+            },
+            {
+                name: "Alif",
+                answer: "taco",
+                accepted: ["taco", "tacos"]
+            },
+            {
+                name: "Aci",
+                answer: "hot dog",
+                accepted: ["hot dog", "hot dogs"]
+            },
+            {
+                name: "Abid",
+                answer: "french fry",
+                accepted: ["french fry", "french fries"]
+            },
+            {
+                name: "Jason",
+                answer: "lemonade",
+                accepted: ["lemonade"]
+            },
+            {
+                name: "Radit",
+                answer: "burrito",
+                accepted: ["burrito", "burritos"]
+            },
+            {
+                name: "Arsy",
+                answer: "iced tea",
+                accepted: ["iced tea"]
+            },
+            {
+                name: "Raziq",
+                answer: "curry",
+                accepted: ["curry"]
+            }
+        ];
+
+        const keyboardRows = [
+            ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
+            ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
+            ["Z", "X", "C", "V", "B", "N", "M"]
+        ];
+
+        function normalizeAnswer(text) {
+            return text
+                .toLowerCase()
+                .trim()
+                .replace(/[^a-z\s]/g, "")
+                .replace(/\s+/g, " ");
+        }
+
+        function createGame(screenId) {
+            const screen = document.getElementById(screenId);
+            const question = screen.querySelector(".question");
+            const input = screen.querySelector(".answer-input");
+            const feedback = screen.querySelector(".feedback");
+            const progress = screen.querySelector(".progress");
+            const keyboard = screen.querySelector(".keyboard");
+
+            let currentIndex = 0;
+            let typedAnswer = "";
+            let locked = false;
+            let finished = false;
+
+            function updateInput() {
+                input.value = typedAnswer;
+            }
+
+            function showQuestion() {
+                if (currentIndex >= players.length) {
+                    finishGame();
+                    return;
+                }
+
+                const player = players[currentIndex];
+
+                question.textContent =
+                    `What's ${player.name} going to have?`;
+
+                progress.textContent =
+                    `${currentIndex + 1}/${players.length}`;
+
+                typedAnswer = "";
+                updateInput();
+
+                feedback.textContent = "";
+                feedback.className = "feedback";
+            }
+
+            function typeLetter(letter) {
+                if (locked || finished) return;
+
+                if (typedAnswer.length >= 25) return;
+
+                typedAnswer += letter;
+                updateInput();
+            }
+
+            function addSpace() {
+                if (locked || finished) return;
+                if (typedAnswer.length === 0) return;
+                if (typedAnswer.endsWith(" ")) return;
+
+                typedAnswer += " ";
+                updateInput();
+            }
+
+            function backspace() {
+                if (locked || finished) return;
+
+                typedAnswer = typedAnswer.slice(0, -1);
+                updateInput();
+            }
+
+            function clearAnswer() {
+                if (locked || finished) return;
+
+                typedAnswer = "";
+                updateInput();
+
+                feedback.textContent = "";
+                feedback.className = "feedback";
+            }
+
+            function animateWrongAnswer() {
+                input.classList.remove("shake");
+
+                void input.offsetWidth;
+
+                input.classList.add("shake");
+
+                setTimeout(() => {
+                    input.classList.remove("shake");
+                }, 350);
+            }
+
+            function checkAnswer() {
+                if (locked || finished) return;
+
+                const player = players[currentIndex];
+                const studentAnswer = normalizeAnswer(typedAnswer);
+
+                if (!studentAnswer) {
+                    feedback.textContent = "Type an answer first.";
+                    feedback.className = "feedback wrong";
+                    animateWrongAnswer();
+                    return;
+                }
+
+                const acceptedAnswers =
+                    player.accepted.map(normalizeAnswer);
+
+                const isCorrect =
+                    acceptedAnswers.includes(studentAnswer);
+
+                if (!isCorrect) {
+                    feedback.textContent = "Try again!";
+                    feedback.className = "feedback wrong";
+                    animateWrongAnswer();
+                    return;
+                }
+
+                locked = true;
+
+                feedback.textContent =
+                    `Correct! ${player.name} is going to have ${player.answer}.`;
+
+                feedback.className = "feedback correct";
+                screen.classList.add("success-flash");
+
+                /*
+                  Setelah 1,3 detik, hanya screen ini yang
+                  berpindah ke nama berikutnya.
+                */
+                setTimeout(() => {
+                    screen.classList.remove("success-flash");
+
+                    currentIndex += 1;
+                    locked = false;
+
+                    showQuestion();
+                }, 1300);
+            }
+
+            function finishGame() {
+                finished = true;
+                locked = true;
+
+                progress.textContent =
+                    `${players.length}/${players.length}`;
+
+                question.textContent = "Great job!";
+                question.classList.add("finished-message");
+
+                typedAnswer = "";
+                input.value = "ALL ORDERS COMPLETED";
+
+                feedback.textContent =
+                    "You finished all eight customers!";
+
+                feedback.className = "feedback correct";
+
+                keyboard
+                    .querySelectorAll("button")
+                    .forEach((button) => {
+                        button.disabled = true;
+                    });
+            }
+
+            function createKey(label, className, action) {
+                const button = document.createElement("button");
+
+                button.type = "button";
+                button.className = `key ${className}`.trim();
+                button.textContent = label;
+
+                button.addEventListener("click", action);
+
+                return button;
+            }
+
+            function buildKeyboard() {
+                keyboard.innerHTML = "";
+
+                keyboardRows.forEach((row) => {
+                    const rowElement = document.createElement("div");
+                    rowElement.className = "keyboard-row";
+
+                    row.forEach((letter) => {
+                        const key = createKey(
+                            letter,
+                            "",
+                            () => typeLetter(letter)
+                        );
+
+                        rowElement.appendChild(key);
+                    });
+
+                    keyboard.appendChild(rowElement);
+                });
+
+                const actionRow = document.createElement("div");
+                actionRow.className = "keyboard-row action-row";
+
+                const spaceButton = createKey(
+                    "SPACE",
+                    "action space",
+                    addSpace
+                );
+
+                const backspaceButton = createKey(
+                    "⌫",
+                    "action",
+                    backspace
+                );
+
+                const clearButton = createKey(
+                    "CLEAR",
+                    "action clear",
+                    clearAnswer
+                );
+
+                const checkButton = createKey(
+                    "CHECK",
+                    "action check",
+                    checkAnswer
+                );
+
+                actionRow.append(
+                    spaceButton,
+                    backspaceButton,
+                    clearButton,
+                    checkButton
+                );
+
+                keyboard.appendChild(actionRow);
+            }
+
+            buildKeyboard();
+            showQuestion();
+        }
+
+        /*
+          Kedua game dibuat terpisah.
+          Kemajuan sisi kiri tidak memengaruhi sisi kanan.
+        */
+        createGame("left-screen");
+        createGame("right-screen");
+    </script>
+</body>
+
+</html>
