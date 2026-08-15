@@ -7,6 +7,13 @@
 
     <title>What Are They Going to Have?</title>
 
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
     <style>
         * {
             box-sizing: border-box;
@@ -25,6 +32,8 @@
             --error-background: #ffe4e4;
             --key-background: #f2f3f8;
             --key-border: #d4d6e2;
+            --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            --font-heading: 'Fredoka', 'Plus Jakarta Sans', system-ui, sans-serif;
         }
 
         body {
@@ -33,10 +42,7 @@
             overflow: hidden;
             background: var(--background);
             color: var(--text);
-            font-family:
-                Arial,
-                Helvetica,
-                sans-serif;
+            font-family: var(--font-main);
         }
 
         .game-board {
@@ -76,8 +82,9 @@
         .team-name {
             margin: 0;
             color: var(--primary);
-            font-size: clamp(18px, 2vw, 27px);
-            font-weight: 900;
+            font-family: var(--font-heading);
+            font-size: clamp(20px, 2.2vw, 30px);
+            font-weight: 700;
             letter-spacing: 1px;
         }
 
@@ -87,8 +94,9 @@
             border-radius: 999px;
             background: var(--primary);
             color: white;
+            font-family: var(--font-heading);
             font-size: clamp(17px, 2vw, 24px);
-            font-weight: 900;
+            font-weight: 700;
             text-align: center;
         }
 
@@ -105,9 +113,12 @@
         .question {
             min-height: 92px;
             margin: 0 0 24px;
+            font-family: var(--font-heading);
             font-size: clamp(26px, 3.2vw, 47px);
-            line-height: 1.2;
+            font-weight: 700;
+            line-height: 1.25;
             text-align: center;
+            color: var(--text);
         }
 
         .answer-input {
@@ -119,8 +130,9 @@
             outline: none;
             background: white;
             color: var(--text);
+            font-family: var(--font-main);
             font-size: clamp(24px, 3vw, 40px);
-            font-weight: 900;
+            font-weight: 800;
             letter-spacing: 2px;
             text-align: center;
             text-transform: uppercase;
@@ -151,8 +163,9 @@
             margin: 14px 0;
             padding: 10px;
             border-radius: 12px;
+            font-family: var(--font-main);
             font-size: clamp(17px, 1.8vw, 24px);
-            font-weight: 800;
+            font-weight: 700;
             line-height: 1.35;
             text-align: center;
         }
@@ -191,8 +204,9 @@
             border-radius: 10px;
             background: var(--key-background);
             color: var(--text);
+            font-family: var(--font-main);
             font-size: clamp(15px, 1.8vw, 23px);
-            font-weight: 900;
+            font-weight: 800;
             cursor: pointer;
             transition:
                 transform 0.08s ease,
@@ -280,17 +294,17 @@
 
 <body>
     <main class="game-board">
-        <!-- LEFT SCREEN -->
+        <!-- LEFT SCREEN (TEAM A) -->
         <section class="game-screen" id="left-screen">
             <header class="screen-header">
-                <h2 class="team-name">TEAM 1</h2>
-                <div class="progress">1/8</div>
+                <h2 class="team-name">TEAM A</h2>
+                <div class="progress">1/4</div>
             </header>
 
             <div class="question-area">
                 <h1 class="question"></h1>
 
-                <input class="answer-input" type="text" aria-label="Team 1 answer" readonly />
+                <input class="answer-input" type="text" aria-label="Team A answer" readonly />
 
                 <div class="feedback" aria-live="polite"></div>
 
@@ -300,17 +314,17 @@
 
         <div class="divider"></div>
 
-        <!-- RIGHT SCREEN -->
+        <!-- RIGHT SCREEN (TEAM B) -->
         <section class="game-screen" id="right-screen">
             <header class="screen-header">
-                <h2 class="team-name">TEAM 2</h2>
-                <div class="progress">1/8</div>
+                <h2 class="team-name">TEAM B</h2>
+                <div class="progress">1/4</div>
             </header>
 
             <div class="question-area">
                 <h1 class="question"></h1>
 
-                <input class="answer-input" type="text" aria-label="Team 2 answer" readonly />
+                <input class="answer-input" type="text" aria-label="Team B answer" readonly />
 
                 <div class="feedback" aria-live="polite"></div>
 
@@ -321,51 +335,51 @@
 
     <script>
         /*
-          Urutan nama dan jawaban.
-    
-          accepted berisi variasi jawaban yang tetap dianggap benar.
-          Contoh: "taco" dan "tacos" sama-sama diterima.
+          Team A & Team B player order lists and accepted answers.
         */
-        const players = [
+        const teamAPlayers = [
             {
-                name: "Alzam",
-                answer: "spaghetti",
-                accepted: ["spaghetti"]
-            },
-            {
-                name: "Alif",
-                answer: "taco",
-                accepted: ["taco", "tacos"]
-            },
-            {
-                name: "Aci",
-                answer: "hot dog",
-                accepted: ["hot dog", "hot dogs"]
-            },
-            {
-                name: "Abid",
-                answer: "french fry",
-                accepted: ["french fry", "french fries"]
-            },
-            {
-                name: "Jason",
-                answer: "lemonade",
-                accepted: ["lemonade"]
-            },
-            {
-                name: "Radit",
+                name: "Claire",
                 answer: "burrito",
                 accepted: ["burrito", "burritos"]
             },
             {
-                name: "Arsy",
-                answer: "iced tea",
-                accepted: ["iced tea"]
+                name: "Ms. Tijah",
+                answer: "french fries",
+                accepted: ["french fries", "french fry"]
             },
             {
-                name: "Raziq",
+                name: "Alea",
+                answer: "hot dog",
+                accepted: ["hot dog", "hot dogs"]
+            },
+            {
+                name: "Mr. Fadel",
+                answer: "taco",
+                accepted: ["taco", "tacos"]
+            }
+        ];
+
+        const teamBPlayers = [
+            {
+                name: "Tsabit",
+                answer: "spaghetti",
+                accepted: ["spaghetti"]
+            },
+            {
+                name: "dilan",
+                answer: "lemonade",
+                accepted: ["lemonade", "lomonade"]
+            },
+            {
+                name: "ayyash",
                 answer: "curry",
                 accepted: ["curry"]
+            },
+            {
+                name: "qory",
+                answer: "iced tea",
+                accepted: ["iced tea"]
             }
         ];
 
@@ -383,7 +397,7 @@
                 .replace(/\s+/g, " ");
         }
 
-        function createGame(screenId) {
+        function createGame(screenId, playersList) {
             const screen = document.getElementById(screenId);
             const question = screen.querySelector(".question");
             const input = screen.querySelector(".answer-input");
@@ -401,18 +415,18 @@
             }
 
             function showQuestion() {
-                if (currentIndex >= players.length) {
+                if (currentIndex >= playersList.length) {
                     finishGame();
                     return;
                 }
 
-                const player = players[currentIndex];
+                const player = playersList[currentIndex];
 
                 question.textContent =
                     `What's ${player.name} going to have?`;
 
                 progress.textContent =
-                    `${currentIndex + 1}/${players.length}`;
+                    `${currentIndex + 1}/${playersList.length}`;
 
                 typedAnswer = "";
                 updateInput();
@@ -471,7 +485,7 @@
             function checkAnswer() {
                 if (locked || finished) return;
 
-                const player = players[currentIndex];
+                const player = playersList[currentIndex];
                 const studentAnswer = normalizeAnswer(typedAnswer);
 
                 if (!studentAnswer) {
@@ -502,10 +516,6 @@
                 feedback.className = "feedback correct";
                 screen.classList.add("success-flash");
 
-                /*
-                  Setelah 1,3 detik, hanya screen ini yang
-                  berpindah ke nama berikutnya.
-                */
                 setTimeout(() => {
                     screen.classList.remove("success-flash");
 
@@ -521,7 +531,7 @@
                 locked = true;
 
                 progress.textContent =
-                    `${players.length}/${players.length}`;
+                    `${playersList.length}/${playersList.length}`;
 
                 question.textContent = "Great job!";
                 question.classList.add("finished-message");
@@ -530,7 +540,7 @@
                 input.value = "ALL ORDERS COMPLETED";
 
                 feedback.textContent =
-                    "You finished all eight customers!";
+                    `You finished all ${playersList.length} customers!`;
 
                 feedback.className = "feedback correct";
 
@@ -615,11 +625,10 @@
         }
 
         /*
-          Kedua game dibuat terpisah.
-          Kemajuan sisi kiri tidak memengaruhi sisi kanan.
+          Inisialisasi game untuk Team A dan Team B
         */
-        createGame("left-screen");
-        createGame("right-screen");
+        createGame("left-screen", teamAPlayers);
+        createGame("right-screen", teamBPlayers);
     </script>
 </body>
 
